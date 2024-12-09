@@ -1,5 +1,6 @@
 <?php
 include('db/config.php');
+session_start(); // Start the session to store messages
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
@@ -8,7 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $table = $role === 'admin' ? 'admin' : 'users';
     $conn->query("INSERT INTO $table (username, password) VALUES ('$username', '$password')");
-    header('Location: login.php');
+
+    // Set a session message for success
+    $_SESSION['success_message'] = 'Pembuatan akun berhasil';
+    
+    // Redirect to register page so the success message is displayed
+    header('Location: register.php');
+    exit();
 }
 ?>
 
@@ -88,11 +95,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         .login-link a:hover {
             text-decoration: underline;
         }
+        .success-message {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
     <div class="registration-container">
         <h2>Registrasi</h2>
+        <!-- Display success message if it's set -->
+        <?php
+        if (isset($_SESSION['success_message'])) {
+            echo '<div class="success-message">' . $_SESSION['success_message'] . '</div>';
+            unset($_SESSION['success_message']); // Clear the message after displaying it
+        }
+        ?>
         <form method="POST" action="">
             <div class="input-group">
                 <label for="username">Username</label>
@@ -115,5 +137,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             Sudah punya akun? <a href="main_menu.php">Login</a>
         </div>
     </div>
+
 </body>
 </html>
